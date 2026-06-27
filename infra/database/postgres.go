@@ -5,16 +5,19 @@ import (
 	"log"
 	"net/url"
 
+	"github.com/gundz204/pglib/odm/base"
 	"github.com/jmoiron/sqlx"
-	"github.com/spf13/viper"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/lib/pq"
 )
 
-func Connect(vip *viper.Viper) (*sqlx.DB, error) {
+func Connect() (*sqlx.DB, error) {
 	var db *sqlx.DB
 	var err error
+
+	cfg := *base.InitConfig()
+	vip := cfg.GetConfig()
 
 	mode := vip.GetString("database.postgres.mode")
 

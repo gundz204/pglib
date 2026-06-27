@@ -3,52 +3,33 @@ package base
 import (
 	"time"
 
-	"github.com/gundz204/pglib/infra/database"
-	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
 type Config struct {
 	vip *viper.Viper
-	db  *sqlx.DB
 }
 
-func (c *Config) InitConfig(path string) *Config {
+func InitConfig() *Config {
 	err := godotenv.Load()
 
 	if err != nil {
 		return nil
 	}
 
-	v, err := c.init(path)
+	v := viper.New()
 
-	if err != nil {
-		return nil
-	}
+	v.SetConfigFile("config.yaml")
+	v.AutomaticEnv()
 
-	db, err := database.Connect(c.vip)
-	if err != nil {
+	if err := v.ReadInConfig(); err != nil {
 		return nil
 	}
 
 	return &Config{
 		vip: v,
-		db:  db,
 	}
-}
-
-func (c *Config) init(path string) (*viper.Viper, error) {
-	v := viper.New()
-
-	v.SetConfigFile(path)
-	v.AutomaticEnv()
-
-	if err := v.ReadInConfig(); err != nil {
-		return nil, err
-	}
-
-	return v, nil
 }
 
 func (c *Config) GetConfig() *viper.Viper {
